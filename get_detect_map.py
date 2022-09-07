@@ -19,6 +19,10 @@ class JsonGetter:
         return json.loads(response.read())
 
 
+def make_absolute_link(path: str) -> str:
+    return f"https://{API_HOST}{path}"
+
+
 def get_composed_boards() -> list[dict[str, Any]]:
     hardware_getter = JsonGetter(API_HOST)
 
@@ -44,7 +48,9 @@ def get_composed_boards() -> list[dict[str, Any]]:
                         "source_pack_id": device_json["source_pack_id"],
                         "_links": {
                             "device": {
-                                "href": API_HOST + device_json["_links"]["self"]["href"]
+                                "href": make_absolute_link(
+                                    device_json["_links"]["self"]["href"]
+                                )
                             }
                         },
                     }
@@ -57,7 +63,9 @@ def get_composed_boards() -> list[dict[str, Any]]:
                     "devices": devices,
                     "_links": {
                         "board": {
-                            "href": API_HOST + board_json["_links"]["self"]["href"]
+                            "href": make_absolute_link(
+                                board_json["_links"]["self"]["href"]
+                            )
                         }
                     },
                 }
@@ -68,10 +76,10 @@ def get_composed_boards() -> list[dict[str, Any]]:
 
 def app(environ, start_response):
     data = json.dumps(get_composed_boards()).encode("UTF-8")
-    status = '200 OK'
+    status = "200 OK"
     response_headers = [
-        ('Content-type', 'application/json'),
-        ('Content-Length', str(len(data)))
+        ("Content-type", "application/json"),
+        ("Content-Length", str(len(data))),
     ]
     start_response(status, response_headers)
     return iter([data])
