@@ -28,7 +28,7 @@ def get_composed_boards() -> list[dict[str, Any]]:
 
     boards: list[dict[str, Any]] = []
 
-    next_page_path = "/boards/?embed"
+    next_page_path = "/boards/?embed&limit=100"
     while next_page_path is not None:
         page_json = hardware_getter.get(next_page_path)
         for board in page_json["_embedded"]["item"]:
